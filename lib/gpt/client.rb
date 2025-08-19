@@ -5,10 +5,10 @@ module GPT
 
     attr_reader :api_key, :base_url, :timeout, :organization, :project
 
-    def initialize(api_key: ENV['OPENAI_API_KEY'], base_url: nil, timeout: nil, organization: ENV['OPENAI_ORG_ID'], project: ENV['OPENAI_PROJECT_ID'])
+    def initialize(api_key: ENV['OPENAI_API_KEY'] || ENV['OPENAI_ACCESS_TOKEN'], base_url: nil, timeout: nil, organization: ENV['OPENAI_ORG_ID'] || ENV['OPENAI_ORGANIZATION_ID'], project: ENV['OPENAI_PROJECT_ID'])
       @api_key = api_key
       @base_url = base_url || DEFAULT_BASE_URL
-      @timeout = (timeout || DEFAULT_TIMEOUT).to_i
+      @timeout = (timeout || ENV['OPENAI_REQUEST_TIMEOUT'] || DEFAULT_TIMEOUT).to_i
       @organization = organization
       @project = project
     end
@@ -87,12 +87,12 @@ module GPT
 
     def apply_headers(req)
       if !api_key || api_key.empty?
-        raise GPT::Error.new('OPENAI_API_KEY não definido')
+        raise GPT::Error.new('Defina OPENAI_API_KEY ou OPENAI_ACCESS_TOKEN')
       end
       req['Authorization'] = "Bearer #{api_key}"
       req['OpenAI-Organization'] = organization if organization && !organization.empty?
       req['OpenAI-Project'] = project if project && !project.empty?
-      req['User-Agent'] = 'gpt-ruby/0.1.0'
+      req['User-Agent'] = "gpt-ruby/#{GPT::VERSION}"
     end
 
     def parse_response(res)

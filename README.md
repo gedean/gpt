@@ -1,6 +1,6 @@
 # gpt
 
-Cliente Ruby simples para a Responses API, com foco no GPT-5.
+Cliente Ruby simples para a Responses API, com foco no GPT-5, com uma API de alto nível inspirada no OpenAIExt.
 
 ## Instalação
 ```
@@ -8,19 +8,16 @@ bash build_and_install.sh
 ```
 
 ## Configuração
-- Defina `OPENAI_API_KEY` no ambiente.
-- Opcional: `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`.
+- Defina `OPENAI_API_KEY` ou `OPENAI_ACCESS_TOKEN` no ambiente.
+- Opcional: `OPENAI_ORG_ID` ou `OPENAI_ORGANIZATION_ID`, `OPENAI_PROJECT_ID`.
+- Opcional: `OPENAI_REQUEST_TIMEOUT` (segundos, padrão 120).
 
 ## Uso básico (GPT-5)
 ```ruby
 require 'gpt'
 
-res = GPT.responses.create({
-  'model' => 'gpt-5',
-  'input' => 'Diga olá em uma frase.'
-})
-
-puts res['id']
+res = GPT.ask('Diga olá em uma frase.', model: 'gpt-5')
+puts res.content
 ```
 
 ## Reasoning mínimo (minimal)
@@ -84,12 +81,10 @@ followup = GPT.responses.create({
 ```ruby
 require 'gpt'
 
-GPT.responses.stream({
-  'model' => 'gpt-5',
-  'input' => 'Conte uma história curta.'
-}) do |chunk|
-  print chunk
-end
+GPT.ask('Conte uma história curta.', model: 'gpt-5', stream: true) { |chunk| print chunk }
+
+# Streaming de texto direto
+GPT.ask('Conte uma história curta.', model: 'gpt-5', text_stream: true) { |text| print text }
 ```
 
 ## Outras operações
@@ -99,4 +94,13 @@ GPT.responses.get(id)
 GPT.responses.input_items(id)
 GPT.responses.cancel(id)
 GPT.responses.delete(id)
+```
+
+## Helpers de resposta
+```ruby
+res = GPT.ask('Qual a capital da França?', model: 'gpt-5')
+res.content
+res.model
+res.total_tokens
+res.to_h
 ```

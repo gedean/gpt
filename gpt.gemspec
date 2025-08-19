@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'gpt'
-  s.version       = '0.1.0'
+  s.version       = '0.1.1'
   s.date          = '2025-08-14'
   s.platform      = Gem::Platform::RUBY
   s.summary       = 'Cliente Ruby para GPT-5 (Responses API)'
