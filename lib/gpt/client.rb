@@ -86,10 +86,13 @@ module GPT
     end
 
     def apply_headers(req)
+      if !api_key || api_key.empty?
+        raise GPT::Error.new('OPENAI_API_KEY não definido')
+      end
       req['Authorization'] = "Bearer #{api_key}"
       req['OpenAI-Organization'] = organization if organization && !organization.empty?
       req['OpenAI-Project'] = project if project && !project.empty?
-      req['User-Agent'] = 'gpt-ruby/0.0.1'
+      req['User-Agent'] = 'gpt-ruby/0.1.0'
     end
 
     def parse_response(res)

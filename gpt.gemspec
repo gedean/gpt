@@ -1,10 +1,10 @@
 Gem::Specification.new do |s|
   s.name          = 'gpt'
-  s.version       = '0.0.1'
+  s.version       = '0.1.0'
   s.date          = '2025-08-14'
   s.platform      = Gem::Platform::RUBY
-  s.summary       = 'GPT >= 5'
-  s.description   = 'Based on ruby-openai, adds some extra features for working with OpenAI APIs'
+  s.summary       = 'Cliente Ruby para GPT-5 (Responses API)'
+  s.description   = 'Cliente Ruby simples para a Responses API com suporte aos recursos do GPT-5 (reasoning, verbosity, tools).'
   s.authors       = ['Gedean Dias']
   s.email         = 'gedean.dias@gmail.com'
   s.files         = Dir['README.md', 'LICENSE', 'CHANGELOG.md', 'lib/**/*']
