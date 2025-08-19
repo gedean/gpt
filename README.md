@@ -3,8 +3,8 @@
 Cliente Ruby simples para a Responses API, com foco no GPT-5, com uma API de alto nível inspirada no OpenAIExt.
 
 ## Instalação
-```
-bash build_and_install.sh
+```bash
+gem install gpt
 ```
 
 ## Configuração
