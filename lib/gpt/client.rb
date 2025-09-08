@@ -120,5 +120,3 @@ module GPT
     end
   end
 end
-
-

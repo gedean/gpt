@@ -11,11 +11,11 @@ module GPT
     end
 
     def get(response_id, include: nil, include_obfuscation: nil, starting_after: nil, stream: nil)
-      query = {}
-      query['include[]'] = include if include
-      query['include_obfuscation'] = include_obfuscation unless include_obfuscation.nil?
-      query['starting_after'] = starting_after if starting_after
-      query['stream'] = stream unless stream.nil?
+      query = []
+      Array(include).each { |v| query << ['include[]', v] } if include
+      query << ['include_obfuscation', include_obfuscation] unless include_obfuscation.nil?
+      query << ['starting_after', starting_after] if starting_after
+      query << ['stream', stream] unless stream.nil?
       res = @client.json_get("/v1/responses/#{response_id}", query: query)
       res.extend(GPT::ResponseExtender) if res.is_a?(Hash)
       res

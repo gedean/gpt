@@ -17,9 +17,21 @@ module GPT
       else
         msg = message
         contents = msg && msg['content']
-        return nil unless contents.is_a?(Array)
-        text_item = contents.find { |c| c['type'] == 'output_text' || c['type'] == 'text' }
-        text_item && text_item['text']
+        if contents.is_a?(Array)
+          text_item = contents.find { |c| c['type'] == 'output_text' || c['type'] == 'text' }
+          return text_item['text'] if text_item && text_item['text'] && !text_item['text'].empty?
+        end
+        if self['output'].is_a?(Array)
+          text_item = self['output'].find { |i| i['type'] == 'output_text' || i['type'] == 'text' }
+          return text_item['text'] if text_item && text_item['text'] && !text_item['text'].empty?
+        end
+        if self['output_text'].is_a?(String) && !self['output_text'].empty?
+          return self['output_text']
+        end
+        if self['content'].is_a?(String) && !self['content'].empty?
+          return self['content']
+        end
+        nil
       end
     end
 
@@ -54,6 +66,26 @@ module GPT
         Time.at(self['created_at'])
       end
     end
+    
+    def functions
+      return [] unless tool_calls?
+  
+      tool_functions = tool_calls.select { |tool| tool['type'] == 'function' }
+      return [] if tool_functions.empty?
+  
+      tool_functions.map { |function| build_function_object(function) }
+    end
+  
+    def functions?
+      functions.any?
+    end
+  
+    def functions_run_all(context:)
+      raise OpenAIExt::FunctionExecutionError, 'No functions to execute' if functions.empty?
+      raise OpenAIExt::FunctionExecutionError, 'Context cannot be nil' if context.nil?
+  
+      functions.map { |function| function.run(context: context) }
+    end
 
     def to_h
       {
@@ -66,9 +98,7 @@ module GPT
     end
 
     def to_s
-      content || '[No content]'
+      content || self['output_text'] || '[No content]'
     end
   end
 end
-
-

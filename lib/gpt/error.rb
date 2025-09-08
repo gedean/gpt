@@ -9,4 +9,4 @@ class GPT::Error < StandardError
   end
 end
 
-
+class GPT::FunctionExecutionError < GPT::Error; end

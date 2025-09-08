@@ -104,3 +104,52 @@ res.model
 res.total_tokens
 res.to_h
 ```
+
+## Function calling
+```ruby
+require 'gpt'
+
+# Passe ferramentas diretamente para GPT.ask
+res = GPT.ask(
+  'Como está o tempo em São Paulo?',
+  model: 'gpt-5',
+  tools: [
+    {
+      'type' => 'function',
+      'name' => 'get_weather',
+      'description' => 'Obter clima atual',
+      'parameters' => {
+        'type' => 'object',
+        'properties' => {
+          'location' => { 'type' => 'string' },
+          'unit' => { 'type' => 'string', 'enum' => ['celsius', 'fahrenheit'] }
+        },
+        'required' => ['location']
+      }
+    }
+  ]
+)
+
+puts res.content
+```
+
+### Executando funções chamadas pelo modelo
+```ruby
+# Se o modelo decidir acionar uma função, você pode inspecionar e executar:
+if res.functions?
+  # Exemplo de contexto com um método compatível com o nome da função
+  class WeatherContext
+    def get_weather(location:, unit: 'celsius')
+      { location: location, unit: unit, temp: 26 }
+    end
+  end
+
+  tool_messages = res.functions_run_all(context: WeatherContext.new)
+
+  # tool_messages é uma lista de hashes com:
+  #   :tool_call_id, :role=>:tool, :name, :content (string/json)
+  # Em Chat Completions, você pode passar estes objetos diretamente em messages.
+  # Na Responses API, converta-os para input items compatíveis (ex.: tool_result).
+  p tool_messages
+end
+```
